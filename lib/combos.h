@@ -1,15 +1,5 @@
 
 
-typedef struct SpecialKey {
-    uint16_t keycode;
-    bool is_pressed;
-    bool is_active;
-    bool is_cooling;
-    bool is_latched;
-    bool is_registered;
-    bool is_modifier;
-} SpecialKey;
-
 SpecialKey* get_special_key(uint16_t keycode);
 void on_special_keyup(SpecialKey * special_key);
 void update_pressed(SpecialKey * special_key);
@@ -32,66 +22,6 @@ void latch_layer(uint16_t layer) {
     // TODO: should different layers have priority?
     latched_layer = layer;
 }
-
-#define NUM_SPECIAL_KEYS 5
-SpecialKey special_keys[NUM_SPECIAL_KEYS] = {
-    { 
-        .keycode = KC_SPC,
-        .is_modifier = false,
-
-        .is_pressed = false,
-        .is_active = false,
-        .is_cooling = false,
-        .is_latched = false,
-        .is_registered = false,
-    },
-    { 
-        .keycode = KC_LSFT,
-        .is_modifier = true,
-
-        .is_pressed = false,
-        .is_active = false,
-        .is_cooling = false,
-        .is_latched = false,
-        .is_registered = false,
-    },
-    {   .keycode = KC_LCTL,
-        .is_modifier = true,
-
-        .is_pressed = false,
-        .is_active = false,
-        .is_cooling = false,
-        .is_latched = false,
-        .is_registered = false,
-    },
-    {   
-        .keycode = KC_RGUI,
-        .is_modifier = true,
-
-        .is_pressed = false,
-        .is_active = false,
-        .is_cooling = false,
-        .is_latched = false,
-        .is_registered = false,
-    },
-        {   
-        .keycode = KC_RALT,
-        .is_modifier = true,
-
-        .is_pressed = false,
-        .is_active = false,
-        .is_cooling = false,
-        .is_latched = false,
-        .is_registered = false,
-    }
-};
-
-#define NUM_COMBOS 3
-uint16_t COMBO_KEYS[NUM_COMBOS][4] = {
-    { 2, KC_SPC, KC_LSFT, SYMBOLS },
-    { 2, KC_SPC, KC_LCTL, LAYER1 },
-    { 2, KC_LSFT, KC_RALT, LAYER2 },
-};
 
 SpecialKey* get_special_key(uint16_t keycode) {
     for (int i = 0; i < NUM_SPECIAL_KEYS; i++) {
@@ -134,7 +64,7 @@ bool is_special_keycode_active_or_pressed(uint16_t keycode) {
 
 
 bool update_active(SpecialKey * special_key) {
-    bool is_active = is_normal_pressed() && special_key->keycode != KC_SPC;
+    bool is_active = num_pressed_keys > 0 && special_key->keycode != KC_SPC;
     if (is_active) {
         special_key->is_active = true;
         return true;

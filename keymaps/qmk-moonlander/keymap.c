@@ -39,7 +39,6 @@ uint16_t get_normal_key(void);
 void on_keyheld_delay_timeout(void);
 
 bool is_qwerty_active = true;
-int num_pressed_keys = 0;
 bool is_keyup_cooldown = false;
 bool is_keyheld = false;
 uint16_t keyup_cooldown_timer = 0;

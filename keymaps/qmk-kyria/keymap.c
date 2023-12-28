@@ -5,9 +5,7 @@
 #include QMK_KEYBOARD_H
 #include "version.h"
 #include "print.h"
-#include "lib/shared.h"
-#include "lib/combos.h"
-
+#include "lib/lib.h"
 
 typedef struct PressedKey PressedKey;
 
@@ -46,9 +44,6 @@ void keyboard_post_init_user(void) {
         debug_enable = true;
     #endif
 }
-
-
-#define KEYHELD_DELAY 250
 
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -158,7 +153,6 @@ void press_key(uint16_t keycode, keyrecord_t* record) {
     pressed_keys[num_pressed_keys].keycode = keycode;
     pressed_keys[num_pressed_keys].row = record->event.key.row;
     pressed_keys[num_pressed_keys].col = record->event.key.col;
-    pressed_keys[num_pressed_keys].keyup_timer = 0;
 
     num_pressed_keys += 1;
 }
@@ -221,9 +215,6 @@ void on_keyup(uint16_t keycode, keyrecord_t *record) {
 
 
 void on_keydown(uint16_t keycode, keyrecord_t *record) {
-    last_row = record->event.key.row;
-    last_col = record->event.key.col;
-
     if (is_keyheld) {
         cancel_keyheld();
     }
