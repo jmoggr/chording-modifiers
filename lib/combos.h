@@ -185,6 +185,10 @@ void on_special_keyup(SpecialKey * special_key) {
 
 void reset_special_keys() {
     for (int i = 0; i < NUM_SPECIAL_KEYS; i++) {
+        if (special_keys[i].keycode == KC_SPC) {
+            continue;
+        }
+
         if (special_keys[i].is_pressed) {
             special_keys[i].is_cooling = true;
         }
