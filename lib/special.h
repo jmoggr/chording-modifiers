@@ -1,22 +1,23 @@
+//
+// exposes
+//
 
-
-SpecialKey* get_special_key(uint16_t keycode);
-void on_special_keyup(SpecialKey * special_key);
-void update_pressed(SpecialKey * special_key);
-bool update_cooling(SpecialKey * special_key);
-bool update_active(SpecialKey * special_key);
-bool should_become_active(SpecialKey * special_key);
-uint16_t get_other_key_in_combo(int combo_index, uint16_t keycode);
-bool is_special_keycode_active(uint16_t keycode);
-bool is_special_keycode_pressed(uint16_t keycode);
-bool update_latched_layers(SpecialKey * special_key);
-void test_header(void);
-void reset_special_keys(void);
-int get_active_layer(void);
-void clear_active(void);
-uint16_t apply_modifiers(uint16_t keycode);
-
+extern SpecialKey special_keys[NUM_SPECIAL_KEYS];
 uint16_t latched_layer = 0;
+
+void tap_key(uint16_t keycode);
+SpecialKey* get_special_key(uint16_t keycode);
+bool is_special_keycode_active_or_pressed(uint16_t keycode);
+void clear_active(void);
+bool is_special_keycode_active(uint16_t keycode);
+void on_special_keyup(SpecialKey * special_key);
+void on_special_keydown(SpecialKey * special_key);
+void reset_special_keys(void);
+
+
+//
+// implementation
+//
 
 void latch_layer(uint16_t layer) {
     // TODO: should different layers have priority?
@@ -60,6 +61,12 @@ bool is_special_keycode_active_or_pressed(uint16_t keycode) {
     }
 
     return special_key->is_active || special_key->is_pressed;
+}
+
+void clear_active(void) {
+    for (int i = 0; i < NUM_SPECIAL_KEYS; i++) {
+        special_keys[i].is_active = false;
+    }
 }
 
 
@@ -108,16 +115,6 @@ bool is_special_keycode_active(uint16_t keycode) {
     return special_key->is_active;
 }
 
-bool is_special_keycode_pressed(uint16_t keycode) {
-    SpecialKey * special_key = get_special_key(keycode);
-
-    if (!special_key) {
-        return false;
-    }
-
-    return special_key->is_pressed;
-}
-
 bool all_keys_in_combo_active(int combo_index) {
     for (int key_index = 1; key_index <= COMBO_KEYS[combo_index][0]; key_index++) {
         if (!is_special_keycode_active(COMBO_KEYS[combo_index][key_index])) {
@@ -158,6 +155,10 @@ bool update_latched_layers(SpecialKey * special_key) {
     return false;
 }
 
+void tap_key(uint16_t keycode) {
+    register_code16(keycode);
+    unregister_code16(keycode);
+}
 
 void on_special_keyup(SpecialKey * special_key) {
     special_key->is_pressed = false;
@@ -183,7 +184,7 @@ void on_special_keyup(SpecialKey * special_key) {
     }
 }
 
-void reset_special_keys() {
+void reset_special_keys(void) {
     for (int i = 0; i < NUM_SPECIAL_KEYS; i++) {
         if (special_keys[i].keycode == KC_SPC) {
             continue;
@@ -197,41 +198,6 @@ void reset_special_keys() {
         special_keys[i].is_active = false;
     }
 }
-
-void clear_active() {
-    for (int i = 0; i < NUM_SPECIAL_KEYS; i++) {
-        special_keys[i].is_active = false;
-    }
-}
-
-uint16_t apply_modifiers(uint16_t keycode) {
-    uint16_t modified_keycode = keycode;
-    for (int i = 0; i < NUM_SPECIAL_KEYS; i++) {
-        if (!special_keys[i].is_active && !special_keys[i].is_latched) {
-            continue;
-        }
-
-        switch (special_keys[i].keycode) {
-            case KC_LSFT:
-                modified_keycode = S(modified_keycode);
-                break;
-            case KC_LCTL:
-                modified_keycode = C(modified_keycode);
-                break;
-            case KC_LALT:
-                modified_keycode = A(modified_keycode);
-                break;
-            case KC_RGUI:
-                modified_keycode = G(modified_keycode);
-                break;
-            default:
-                break;
-        }
-    }
-
-    return modified_keycode;
-}
-
 
 // Check if any combos that include the special key have other keys that
 // are active or pressed
@@ -283,6 +249,7 @@ void unregister_other_keys_in_combo(SpecialKey * special_key) {
     }
 }
 
+
 void on_special_keydown(SpecialKey * special_key) {
     special_key->is_pressed = true;
 
@@ -298,50 +265,4 @@ void on_special_keydown(SpecialKey * special_key) {
     } else {
         unregister_other_keys_in_combo(special_key);
     }
-}
-
-int get_combo_layer_if_active(int combo_index) {
-    bool all_keys_active_or_pressed = true;
-    for (int key_index = 1; key_index <= COMBO_KEYS[combo_index][0]; key_index++) {
-        if (!is_special_keycode_active_or_pressed(COMBO_KEYS[combo_index][key_index])) {
-            all_keys_active_or_pressed = false;
-            break;
-        }
-    }
-
-    if (!all_keys_active_or_pressed) {
-        return 0;
-    }
-
-    for (int key_index = 1; key_index <= COMBO_KEYS[combo_index][0]; key_index++) {
-        SpecialKey * special_key = get_special_key(COMBO_KEYS[combo_index][key_index]);
-        if (!special_key) {
-            // TODO: log error
-            continue;
-        }
-
-        special_key->is_cooling = special_key->is_pressed;
-        special_key->is_active = false;
-    }
-
-    int layer_index = COMBO_KEYS[combo_index][0] + 1;
-    return COMBO_KEYS[combo_index][layer_index];
-}
-
-int get_active_layer() {
-    for (int i = 0; i < NUM_COMBOS; i++) {
-        int active_layer = get_combo_layer_if_active(i);
-        if (active_layer) {
-            return active_layer;
-        }
-    }
-
-    int active_layer = BASE;
-
-    if (latched_layer) {
-        active_layer = latched_layer;
-        latched_layer = 0;
-    }
-
-    return active_layer;
 }
