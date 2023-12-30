@@ -1,7 +1,7 @@
 enum custom_keycodes {
     KC_LYR1 = SAFE_RANGE,
     KC_RNGC,
-    KC_RNGN
+    KC_RNGN,
 };
 
 enum layers {
@@ -32,18 +32,19 @@ SpecialKey special_keys[NUM_SPECIAL_KEYS] = {
         .is_modifier = true,
         SPECIAL_KEY_DEFAULT
     },
-        {   
-        .keycode = KC_RALT,
-        .is_modifier = true,
+    {
+        .keycode = KC_LYR1,
+        .is_modifier = false,
         SPECIAL_KEY_DEFAULT
     }
 };
 
+// All keys used in combos MUST also be included in special_keys
 #define NUM_COMBOS 3
 uint16_t COMBO_KEYS[NUM_COMBOS][4] = {
     { 2, KC_SPC, KC_LSFT, SYMBOLS },
     { 2, KC_SPC, KC_LCTL, LAYER1 },
-    { 2, KC_LSFT, KC_RALT, LAYER2 },
+    { 1, KC_LYR1, LAYER2 },
 };
 
 #define KEYHELD_DELAY 250

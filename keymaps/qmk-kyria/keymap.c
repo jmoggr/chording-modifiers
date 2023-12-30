@@ -30,7 +30,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_ESC,  KC_Z,    KC_D,    KC_R,    KC_W,    KC_BSPC,                                         KC_UP,   KC_F,    KC_U,    KC_P,    KC_Q,   KC_NO,
         KC_G,    KC_A,    KC_S,    KC_H,    KC_T,    KC_RSFT,                                         KC_DOWN, KC_N,    KC_E,    KC_O,    KC_I,   KC_Y,
         KC_NO,   KC_V,    KC_X,    KC_M,    KC_C,    KC_NO,   KC_NO,    KC_NO,      KC_NO,   KC_NO,   KC_NO,   KC_L,    KC_B,    KC_J,    KC_K,   KC_NO,
-                                   KC_NO,   KC_NO,   KC_LCTL, KC_SPC,   KC_RGUI,    KC_NO,   KC_LSFT, KC_RALT, KC_NO,   KC_NO
+                                   KC_NO,   KC_NO,   KC_LCTL, KC_SPC,   KC_RGUI,    KC_NO,   KC_LSFT, KC_LYR1, KC_NO,   KC_NO
     ),
 
     // KC_SPC + KC_LSFT
@@ -49,7 +49,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                                    _______, _______, _______, _______, _______, _______, _______, _______, _______, _______
     ),
 
-    // KC_LSFT + KC_RALT
+    // KC_LYR1
     [LAYER2] = LAYOUT(
         _______, KC_DOT,  KC_4,    KC_5,    KC_6,    KC_NO,                                       _______, KC_AT,   KC_HASH, KC_GRAVE,   KC_NO,   _______,
         KC_NO,   KC_0,    KC_1,    KC_2,    KC_3,    KC_NO,                                       _______, C(KC_BSPC),   KC_PERC, KC_ASTR, KC_TILD, KC_NO,
