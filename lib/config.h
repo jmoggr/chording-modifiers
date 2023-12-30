@@ -40,10 +40,12 @@ SpecialKey special_keys[NUM_SPECIAL_KEYS] = {
 };
 
 // All keys used in combos MUST also be included in special_keys
+//
+// TODO: document why combo order matters
 #define NUM_COMBOS 3
 uint16_t COMBO_KEYS[NUM_COMBOS][4] = {
-    { 2, KC_SPC, KC_LSFT, SYMBOLS },
     { 2, KC_SPC, KC_LCTL, LAYER1 },
+    { 2, KC_SPC, KC_LSFT, SYMBOLS },
     { 1, KC_LYR1, LAYER2 },
 };
 

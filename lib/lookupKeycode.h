@@ -9,7 +9,7 @@ uint16_t lookup_keycode(uint8_t row, uint8_t col);
 // implementation
 //
 
-uint16_t apply_modifiers(uint16_t keycode) {
+uint16_t apply_modifiers(uint16_t keycode, int layer) {
     uint16_t modified_keycode = keycode;
     for (int i = 0; i < NUM_SPECIAL_KEYS; i++) {
         if (!special_keys[i].is_active && !special_keys[i].is_latched) {
@@ -31,6 +31,15 @@ uint16_t apply_modifiers(uint16_t keycode) {
                 break;
             default:
                 break;
+        }
+    }
+
+    // TODO: generalize - we should check this for all modifiers that are not part
+    // of the combo responsible for the current layer
+    if (layer == LAYER1) {
+        SpecialKey * special_key = get_special_key(KC_LSFT);
+        if (special_key && special_key->is_pressed) {
+            modified_keycode = S(modified_keycode);
         }
     }
 
@@ -87,7 +96,7 @@ uint16_t lookup_keycode(uint8_t row, uint8_t col) {
     int layer = get_active_layer();
 
     uint16_t keycode = pgm_read_word(&keymaps[layer][row][col]);
-    keycode = apply_modifiers(keycode);
+    keycode = apply_modifiers(keycode, layer);
 
     return keycode;
 }
